@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <!-- Top menu item -->
+        <!-- Top menu item - modified -->
         <menuitem
             id="menu_hr_root"
             name="Employees"
