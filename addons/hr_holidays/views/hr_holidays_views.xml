@@ -85,7 +85,7 @@
                     <button string="Confirm" name="action_confirm" states="draft" type="object" class="oe_highlight"/>
                     <button string="Approve" name="action_approve" states="confirm" type="object" groups="hr_holidays.group_hr_holidays_user" class="oe_highlight"/>
                     <button string="Validate" name="action_validate" states="validate1" type="object" groups="hr_holidays.group_hr_holidays_manager" class="oe_highlight"/>
-                    <button string="Refuse" name="action_refuse" states="confirm,validate,validate1" type="object" groups="hr_holidays.group_hr_holidays_user"/>
+                    <button string="Refuse" name="action_refuse" states="confirm" type="object" groups="hr_holidays.group_hr_holidays_user"/>
                     <button string="Reset to Draft" name="action_draft" type="object"
                             attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['confirm', 'refuse'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate"/>
@@ -110,7 +110,7 @@
                                 </div>
                             </div>
                         </group>
-                        <group>
+                        <group groups="hr_holidays.group_hr_holidays_manager">
                             <field name="holiday_type" attrs="{'readonly':[('type', '=', 'remove'),('state','!=','draft')]}" string="Mode" groups="hr_holidays.group_hr_holidays_user" context="{'employee_id':employee_id}" />
                             <field name="employee_id" attrs="{'required':[('holiday_type','=','employee')],'invisible':[('holiday_type','=','category')]}" groups="hr_holidays.group_hr_holidays_user"/>
                             <field name="category_id" attrs="{'required':[('holiday_type','=','category')], 'readonly': [('type', '=', 'remove'),('state','!=','draft'), ('state','!=','confirm')], 'invisible':[('holiday_type','=','employee')]}"/>
@@ -289,22 +289,15 @@
             name="Reports"
             parent="menu_hr_holidays_root"
             sequence="99"
-            groups="hr_holidays.group_hr_holidays_manager,hr_holidays.group_hr_holidays_user"/>
+            groups="hr_holidays.group_hr_holidays_manager"/>
 
         <record id="open_ask_holidays" model="ir.actions.act_window">
             <field name="name">Leaves Request</field>
             <field name="res_model">hr.holidays</field>
             <field name="view_type">form</field>
             <field name="view_id" ref="edit_holiday_new"/>
-            <field name="context">{
-                'default_type': 'remove',
-                'search_default_my_leaves': 1,
-                'needaction_menu_ref':
-                [
-                    'hr_holidays.menu_open_company_allocation',
-                ]
-            }</field>
-            <field name="domain">[('type','=','remove')]</field>
+            <field name="context">{}</field>
+            <field name="domain">[('type','=','remove'), ('user_id', '=', uid)]</field>
             <field name="search_view_id" ref="view_hr_holidays_filter"/>
             <field name="help" type="html">
               <p class="oe_view_nocontent_create">
@@ -417,6 +410,7 @@
         <menuitem
             id="menu_open_allocation_holidays"
             parent="menu_hr_holidays_my_leaves"
+            groups="hr_holidays.group_hr_holidays_manager"
             action="open_allocation_holidays"
             sequence="40"/>
 
@@ -483,6 +477,7 @@
             id="menu_open_company_allocation"
             name="Leaves Summary"
             parent="menu_hr_holidays_my_leaves"
+            groups="hr_holidays.group_hr_holidays_manager"
             action="open_company_allocation"
             sequence="21"/>
 
@@ -507,13 +502,13 @@
             <field name="res_model">hr.holidays</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,calendar</field>
-            <field name="context">{'search_default_department':1, 'search_default_approve':1}</field>
+            <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Click here to create a new leave request.
                 </p>
             </field>
-            <field name="domain">[('type','=','remove')]</field>
+            <field name="domain">[('type','=','remove'), ('parent_id.user_id', '=', uid)]</field>
             <field name="search_view_id" ref="view_hr_holidays_filter"/>
         </record>
 
@@ -544,6 +539,7 @@
             id="menu_open_department_leave_allocation_approve" groups="hr_holidays.group_hr_holidays_manager,hr_holidays.group_hr_holidays_user"
             name="Leaves Allocation"
             parent="menu_hr_holidays_approvals"
+            groups="hr_holidays.group_hr_holidays_manager"
             action="open_department_holidays_allocation_approve"
             sequence="2"/>
 
@@ -551,7 +547,7 @@
             id="menu_open_employee_leave"
             name="Leave Details"
             parent="menu_hr_holidays_report"
-            groups="hr_holidays.group_hr_holidays_manager,hr_holidays.group_hr_holidays_user"
+            groups="hr_holidays.group_hr_holidays_manager"
             action="open_employee_leaves"
             sequence="4"/>
 
